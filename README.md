@@ -105,3 +105,12 @@ This project utilizes the following libraries and tools:
 ## Results
 ### Model Performance
 The models were evaluated using key performance metrics, including R² Score, Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE). 
+
+| Model                      | MAE      | MSE      | RMSE     | R²       |
+|----------------------------|----------|----------|----------|----------|
+| Polynomial Regression      | 0.281022 | 0.106741 | 0.326712 | -0.000635 |
+| Decision Tree Regression   | 0.281117 | 0.106907 | 0.326967 | -0.002194 |
+| Random Forest Regression   | 0.281028 | 0.106758 | 0.326738 | -0.000792 |
+| XGBoost Regression        | 0.281637 | 0.107447 | 0.327791 | -0.007254 |
+
+Regarding the evaluation results of the four models, it is evident that the models fail to predict the delay probability of orders.
