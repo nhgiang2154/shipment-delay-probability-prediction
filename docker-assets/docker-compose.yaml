@@ -1,0 +1,27 @@
+# This Docker Compose file sets up a RabbitMQ service with the management plugin enabled.
+version: "3.8"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management # Use the RabbitMQ image with the management plugin
+    container_name: 'rabbitmq'
+    ports:
+        - 5672:5672 # Exposes ports 5672 (for AMQP protocol)
+        - 15672:15672 # Exposes ports 15672 (for RabbitMQ management UI)
+    volumes:
+        - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/ # Mounts host directories for data persistence
+        - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq # Mounts host directories for log persistence
+    networks:
+        - rabbitmq_python
+  producer:
+    build:
+      context: .
+      dockerfile: producer/Dockerfile
+    container_name: 'rabbitmq_producer'
+    depends_on:
+      - rabbitmq
+    networks:
+      - rabbitmq_python
+
+networks:
+  rabbitmq_python:
+    driver: bridge # Creates a bridge network for the RabbitMQ service
