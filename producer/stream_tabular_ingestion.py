@@ -4,6 +4,7 @@ from datetime import datetime
 from time import sleep
 
 import pandas as pd
+import numpy as np
 import pika
 import joblib
 
@@ -24,7 +25,6 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-
 def create_queue(channel, queue_name):
     # Create queue if not exists
     try:
@@ -34,11 +34,10 @@ def create_queue(channel, queue_name):
         print(f"Queue {queue_name} already exists. Skipping creation! Error: {e}")
         pass
 
-
 # Load the models
-regression_model = joblib.load("Regression_pipeline.pkl")
-tree_model = joblib.load("Tree_pipeline.pkl")
-random_forest_model = joblib.load("Forest_pipeline.pkl")
+regression_model = joblib.load("Polynomial Regression_pipeline.pkl")
+tree_model = joblib.load("Decision Tree_pipeline.pkl")
+random_forest_model = joblib.load("Random Forest_pipeline.pkl")
 xgb_model = joblib.load("XGBoost_pipeline.pkl")
 
 def create_streams(server, queue_name):
@@ -75,7 +74,7 @@ def create_streams(server, queue_name):
             sleep(10)
             pass
     
-    df = pd.read_csv("C:/Users/Admin/demo-final-project-real-time/producer/tabular_data.csv")
+    df = pd.read_csv("C:/Users/Admin/Downloads/shipment/docker-assets/producer/tabular_data.csv")
 
     # Create a new queue for this device id if not exists
     create_queue(channel, queue_name=queue_name)
@@ -86,26 +85,22 @@ def create_streams(server, queue_name):
         record["datetime"] = record["created"] # for simple purpose
 
         # Apply the models to the data
-        poly_regression_pred = regression_model.predict(pd.DataFrame([record]))
-        tree_pred = tree_model.predict(pd.DataFrame([record]))
-        random_forest_pred = random_forest_model.predict(pd.DataFrame([record])) 
-        xgb_pred = xgb_model.predict(pd.DataFrame([record]))
+        input_features = list(regression_model.feature_names_in_)
+        record_df = pd.DataFrame([record])[input_features]
         
-        # Add the predictions to the record
-        record["poly_regression_prediction"] = poly_regression_pred[0]
-        record["tree_prediction"] = tree_pred[0]
-        record["random_forest_prediction"] = random_forest_pred[0]
-        record["xgb_prediction"] = xgb_pred[0]
+        record["regression_prediction"] = regression_model.predict(record_df)[0]
+        record["tree_prediction"] = tree_model.predict(record_df)[0]
+        record["random_forest_prediction"] = random_forest_model.predict(record_df)[0]
+        record["xgb_prediction"] = xgb_model.predict(record_df)[0]
 
-        # Send the updated record with predictions to the queue
+        # Send messages to this queue
         channel.basic_publish(
             exchange='',
             routing_key=queue_name,
-            body=json.dumps(record),
+            body=json.dumps(record, default=lambda x: float(x) if isinstance(x, (np.float32, np.float64)) else x),
             properties=pika.BasicProperties(
-                delivery_mode=2,
-            )
-        )
+                delivery_mode=2,  # make message persistent
+            ))
         print(record)
         sleep(2)
 
