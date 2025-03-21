@@ -96,11 +96,11 @@ This project utilizes the following libraries and tools:
 - matplotlib: Plotting and chart creation.
 ### Machine Learning
 - scikit-learn: Model building and evaluation.
-- xgboost: Gradient boosting for demand prediction.
-### Serialization
-- dill: Enhanced serialization of Python objects.
+- xgboost: Gradient boosting for delay probability prediction.
 ### Development Tools
 - Jupyter Notebook: Code editing and debugging.
+- Docker: Run container applications.
+- RabbitMQ: Message Broker.
   
 ## Results
 ### Model Performance
