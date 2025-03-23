@@ -101,6 +101,8 @@ This project utilizes the following libraries and tools:
 - Jupyter Notebook: Code editing and debugging.
 - Docker: Run container applications.
 - RabbitMQ: Message Broker.
+
+This deployment model was contributed to by Tien Nguyen Kha with his excellent repository: https://github.com/Full-Stack-Data-Science/demo-final-project-real-time/tree/main
   
 ## Results
 ### Model Performance
